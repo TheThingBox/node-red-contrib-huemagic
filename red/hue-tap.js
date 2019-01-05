@@ -41,27 +41,8 @@ module.exports = function(RED)
 					return;
 				}
 
-				var buttonNum = 0;
-
-				if(sensor.state.buttonEvent == 34)
-				{
-					buttonNum = 1;
-				}
-				else if(sensor.state.buttonEvent == 16)
-				{
-					buttonNum = 2;
-				}
-				else if(sensor.state.buttonEvent == 17)
-				{
-					buttonNum = 3;
-				}
-				else if(sensor.state.buttonEvent == 18)
-				{
-					buttonNum = 4;
-				}
-
 				var message = {};
-				message.payload = {button: buttonNum, updated: moment.utc(sensor.state.lastUpdated).local().format()};
+				message.payload = {button: 0, updated: moment.utc(sensor.state.lastUpdated).local().format()};
 
 				message.info = {};
 				message.info.id = sensor.id;
@@ -75,8 +56,28 @@ module.exports = function(RED)
 				message.info.model.name = sensor.model.name;
 				message.info.model.type = sensor.model.type;
 
-				scope.send(message);
-				scope.status({fill: "green", shape: "dot", text: "Button #" + buttonNum + " pressed"});
+				if(sensor.state.buttonEvent == 34)
+				{
+					message.payload.button = 1;
+					scope.send([message,null,null,null]);
+				}
+				else if(sensor.state.buttonEvent == 16)
+				{
+					message.payload.button = 2;
+					scope.send([null,message,null,null]);
+				}
+				else if(sensor.state.buttonEvent == 17)
+				{
+					message.payload.button = 3;
+					scope.send([null,null,message,null]);
+				}
+				else if(sensor.state.buttonEvent == 18)
+				{
+					message.payload.button = 4;
+					scope.send([null,null,null,message]);
+				}
+
+				
 			}
 			else
 			{
