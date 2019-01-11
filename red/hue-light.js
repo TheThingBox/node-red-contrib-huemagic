@@ -115,14 +115,21 @@ module.exports = function(RED)
 				return false;
 			}
 
-			// SIMPLE TURN ON / OFF LIGHT
-			if(msg.payload == true || msg.payload == false)
-			{
+			// SIMPLE TURN ON / OFF LIGHT	
+		if(msg.intent !== undefined || msg.payload === true || msg.payload === false) {
+		  
+  			var state;
+  			if(msg.intent !== undefined) // intent is prioritary
+  				state = (msg.intent==1 ? true : false);
+  			else // take the payload
+  				state = msg.payload;
+			
+
 				if(tempLightID != false)
 				{
 					bridge.client.lights.getById(tempLightID)
 					.then(light => {
-						light.on = msg.payload;
+						light.on = state;
 						return bridge.client.lights.save(light);
 					})
 					.then(light => {
@@ -229,12 +236,12 @@ module.exports = function(RED)
 					// SET BRIGHTNESS
 					if(typeof msg.payload.brightness != 'undefined')
 					{
-						if(msg.payload.brightness > 100 || msg.payload.brightness < 0)
-						{
-							scope.error("Invalid brightness setting. Only 0 - 100 percent allowed");
-							return false;
-						}
-						else if(msg.payload.brightness == 0)
+						if(msg.payload.brightness < 0)
+							msg.payload.brightness = 0;
+						else if(msg.payload.brightness > 100)
+							msg.payload.brightness = 100;
+						
+						if(msg.payload.brightness == 0)
 						{
 							light.on = false;
 						}
@@ -270,9 +277,12 @@ module.exports = function(RED)
 					}
 
 					// SET HEX COLOR
-					if(msg.payload.hex && light.xy)
+					if(light.xy && (msg.payload.hex || msg.color))
 					{
-						var rgbResult = hexRGB((msg.payload.hex).toString());
+						var color = msg.payload.hex;
+						if (msg.color)
+							color = msg.color;
+						var rgbResult = hexRGB((color).toString());
 						light.xy = rgb.convertRGBtoXY([rgbResult.red, rgbResult.green, rgbResult.blue], light.model.id);
 					}
 
