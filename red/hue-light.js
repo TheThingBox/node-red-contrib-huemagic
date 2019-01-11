@@ -284,6 +284,7 @@ module.exports = function(RED)
 							color = msg.color;
 						var rgbResult = hexRGB((color).toString());
 						light.xy = rgb.convertRGBtoXY([rgbResult.red, rgbResult.green, rgbResult.blue], light.model.id);
+						light.on = true;
 					}
 
 					// SET COLOR TEMPERATURE
