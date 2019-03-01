@@ -234,21 +234,26 @@ module.exports = function(RED)
 					}
 
 					// SET BRIGHTNESS
-					if(typeof msg.payload.brightness != 'undefined')
+					if(typeof msg.payload.brightness != 'undefined' || typeof msg.intensity !== 'undefined')
 					{
-						if(msg.payload.brightness < 0)
-							msg.payload.brightness = 0;
-						else if(msg.payload.brightness > 100)
-							msg.payload.brightness = 100;
+						if(typeof msg.payload.brightness != 'undefined')
+							var brightness = parseInt(msg.payload.brightness);
+						if(typeof msg.intensity !== 'undefined')
+							brightness = msg.intensity;
 						
-						if(msg.payload.brightness == 0)
+						if(brightness < 0)
+							brightness = 0;
+						else if(brightness > 100)
+							brightness = 100;
+						
+						if(brightness == 0)
 						{
 							light.on = false;
 						}
 						else
 						{
 							light.on = true;
-							light.brightness = Math.round((254/100)*parseInt(msg.payload.brightness));
+							light.brightness = Math.round((254/100)*brightness);
 						}
 					}
 					else if(typeof msg.payload.incrementBrightness != 'undefined')
@@ -284,6 +289,7 @@ module.exports = function(RED)
 							color = msg.color;
 						var rgbResult = hexRGB((color).toString());
 						light.xy = rgb.convertRGBtoXY([rgbResult.red, rgbResult.green, rgbResult.blue], light.model.id);
+						light.on = true;
 					}
 
 					// SET COLOR TEMPERATURE

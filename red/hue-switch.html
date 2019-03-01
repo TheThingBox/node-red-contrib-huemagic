@@ -78,13 +78,13 @@
             sensorid: {value:"", required: true, validate: RED.validators.number()}
         },
         inputs: 0,
-        outputs: 1,
+        outputs: 4,
         outputLabels: 'button pressed',
         align: 'right',
         icon: "hue-switch.png",
-        paletteLabel: "Hue Switch",
+        paletteLabel: "Hue Dimmer",
         label: function() {
-            return this.name || "Hue Switch";
+            return this.name || "Hue Dimmer Switch";
         },
         oneditprepare: function()
         {

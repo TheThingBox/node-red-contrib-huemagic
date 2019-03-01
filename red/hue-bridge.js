@@ -34,6 +34,7 @@ module.exports = function(RED)
 			.then(bridgeInformation => {
 				var message = {};
 				message.payload = {};
+				message.payload.error=false;
 				message.payload.id = bridgeInformation.id;
 				message.payload.name = bridgeInformation.name;
 				message.payload.factoryNew = bridgeInformation.factoryNew;
@@ -65,13 +66,15 @@ module.exports = function(RED)
 				message.payload.model.name = bridgeInformation.model.name;
 
 				scope.send(message);
-				scope.status({fill: "grey", shape: "dot", text: "connected" });
+				scope.status({fill: "green", shape: "dot", text: "connected" });
 			})
 			.catch(error => {
-				scope.error(error);
+				//scope.error(error);
 				if(scope.nodeActive == true)
 				{
-					setTimeout(function(){ scope.getBridgeInformation(); }, 2000);
+					setTimeout(function(){ scope.getBridgeInformation(); }, 10000);
+					console.log("error", error);
+					scope.send({payload: {"error":true, "message":error}});
 				}
 			});
 		}

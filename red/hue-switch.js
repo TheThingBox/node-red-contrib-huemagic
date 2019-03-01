@@ -39,24 +39,36 @@ module.exports = function(RED)
 				if (lastUpdated === false) {
 					return;
 				}
-
+				//console.log("sensor:", sensor);
+				
+				var message = {};
+				
 				// DEFINE HUMAN READABLE BUTTON NAME
 				var buttonName = "";
+				var buttonNb = 0;
 				if(sensor.state.buttonEvent < 2000)
 				{
 					buttonName = "On";
+					buttonNb = 1;
+					message.intent=1;
 				}
 				else if(sensor.state.buttonEvent < 3000)
 				{
 					buttonName = "Dim Up";
+					buttonNb = 2;
+					message.intent=2;
 				}
 				else if(sensor.state.buttonEvent < 4000)
 				{
 					buttonName = "Dim Down";
+					buttonNb = 3;
+					message.intent=3;
 				}
 				else
 				{
 					buttonName = "Off";
+					buttonNb = 4;
+					message.intent=0;
 				}
 
 				// DEFINE HUMAN READABLE BUTTON ACTION
@@ -80,9 +92,10 @@ module.exports = function(RED)
 					buttonAction = "long released";
 				}
 
-				var message = {};
+				
 				message.payload = {};
 				message.payload.button = sensor.state.buttonEvent;
+				message.payload.buttonnb = buttonNb;
 				message.payload.name = buttonName;
 				message.payload.action = buttonAction;
 				message.payload.updated = moment.utc(sensor.state.lastUpdated).local().format();
@@ -100,8 +113,30 @@ module.exports = function(RED)
 				message.info.model.manufacturer = sensor.model.manufacturer;
 				message.info.model.name = sensor.model.name;
 				message.info.model.type = sensor.model.type;
+				
 
-				scope.send(message);
+				switch (buttonNb) {
+					
+					case 1:
+					scope.send([message, null, null, null]);
+					break;
+					
+					case 2:
+					scope.send([null, message, null, null]);
+					break;
+					
+					case 3:
+					scope.send([null, null, message, null]);
+					break;
+					
+					case 4:
+					scope.send([null, null, null, message]);
+					break;
+
+					default: // happen?
+					scope.send([message, null, null, null]);
+					}
+				
 				scope.status({fill: "green", shape: "dot", text: buttonName + " " + buttonAction});
 			}
 			else
