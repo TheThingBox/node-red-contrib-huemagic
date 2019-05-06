@@ -10,7 +10,6 @@ The Thingbox is the easiest and quickiest way to get Node-RED running on a Pi. A
 These nodes also work on stock NodeRED.
 
 
-
 Features
 -------
 
