@@ -39,9 +39,20 @@ module.exports = function(RED)
 				scope.temperature = sensor.state.temperature;
 				var celsius = Math.round(sensor.state.temperature * 100) / 100;
 				var fahrenheit = Math.round(((celsius * 1.8)+32) * 100) / 100;
-
-				var message = {};
-				message.payload = {celsius: celsius, fahrenheit: fahrenheit, updated: moment.utc(sensor.state.lastUpdated).local().format()};
+				
+				var t = fahrenheit; // !!! add setting
+				if(config.celsius)
+					t = celsius;
+				
+				var message = {
+					payload: t,
+					message: "Temperature is " + t,
+					battery: sensor.config.battery,
+					updated: moment.utc(sensor.state.lastUpdated).local().format()
+				};
+				
+				console.log("message.message", message.message);
+				message.data = {celsius: celsius, fahrenheit: fahrenheit};
 
 				message.info = {};
 				message.info.id = sensor.id;

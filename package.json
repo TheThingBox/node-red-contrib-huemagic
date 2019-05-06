@@ -1,6 +1,6 @@
 {
   "name": "ttb-huemagic",
-  "version": "1.1.0",
+  "version": "1.2.5",
   "description": "Philips Hue node to control bridges, lights, groups, scenes, taps, switches, motion sensors, temperature sensors and Lux sensors using Node-RED.",
   "author": "foddy",
   "homepage": "https://github.com/Foddy/node-red-contrib-huemagic",
@@ -32,7 +32,8 @@
       "hue-switch": "red/hue-switch.js",
       "hue-motion": "red/hue-motion.js",
       "hue-temperature": "red/hue-temperature.js",
-      "hue-brightness": "red/hue-brightness.js"
+      "hue-brightness": "red/hue-brightness.js",
+     "hue-whitecolor": "red/hue-whitecolor.js"
     }
   },
   "publishConfig": {

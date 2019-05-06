@@ -1,0 +1,117 @@
+<script type="text/x-red" data-template-name="hue-whitecolor">
+    <div id="tabs-1" style="padding-top: 15px;padding-left: 15px">
+      <div class="form-row" style="padding-left: 15px;">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width: 200px;"/>
+      </div>
+      <div class="form-row" style="padding-left: 15px;">
+        <label for="node-input-val"><i class="icon-tag"></i> Value</label>
+        <input type="text" id="node-input-val" style="width: 10%;" placeholder="0"/>
+      </div>
+      <div class="form-row" id="slider" style="width: 70%;display: block; margin-left: auto;  margin-right: auto;"></div>
+    </div>
+
+
+</script>
+<script type="text/x-red" data-help-name="hue-whitecolor">
+  <p>This node allows you to select a white temperature using a slider.</p>
+  <p>Left is colder, right is warmer.</p>
+</script>
+
+<script type="text/javascript">
+	RED.nodes.registerType('hue-whitecolor', {
+        category: 'HueMagic',
+        color: '#ffffff',
+        defaults: {
+		  name: {value: "White Temperature"},
+		  min: {value: 153},
+		  max: {value: 500},
+		  val: {value: 153}
+        },
+		inputs:1,
+        outputs: 1,
+        align: 'right',
+        icon: "hue-temperature.png",
+		label: function() {
+		  var caption=this.name || "White Temperature";
+		  return caption + ": " + Math.round(100*((this.val - 153)/(500-153))) + "%";
+		 },
+		oneditprepare:function(){
+		  var minimum=parseInt(this.min);
+		  var maximum=parseInt(this.max);
+		  var value=parseInt(this.val);
+
+		  $("#slider").slider({
+			create: function(event, ui){
+			$("#slider").slider('value',value);
+			/*
+			  if(value >= minimum && value <= maximum){
+				$("#slider").slider('value',value);
+			  }
+			  else{
+				$("#slider").slider('value',minimum);
+			  }
+			 */
+			},
+			min:parseInt(minimum),
+			max:parseInt(maximum),
+			slide: function( event, ui ) {
+			  $("#node-input-val").val(ui.value);
+			}
+		  });
+
+		  $("#node-input-val").change(function(){
+			if(this.value >= minimum && this.value <= maximum){
+			  value=parseInt(this.value);
+			  $("#slider").slider('value',parseInt(this.value));
+			}
+			else{
+			  this.value=parseInt(minimum);
+			  value=parseInt(minimum);
+			  $("#slider").slider('value',value);
+			}
+		  })
+		  $("#node-input-val").click(function(){
+			$("#node-input-val").trigger("change");
+		  });
+		  $("#node-input-val").focus(function(){
+			$("#node-input-val").trigger("change");
+		  });
+		  $("#node-input-val").blur(function(){
+			$("#node-input-val").trigger("change");
+		  });
+
+		  $("#node-input-min").blur(function(){
+			$("#node-input-val").trigger("change");
+			if(this.value < maximum){
+			  if(this.value <= value){
+				minimum=parseInt(this.value);
+			  }
+			  else{
+				minimum=parseInt(this.value);
+				value=parseInt(minimum);
+				$("#slider").slider('value',parseInt(this.value));
+				$("#node-input-val").val(parseInt(this.value));
+			  }
+			  $("#slider").slider("option", "min", minimum);
+			}
+		  })
+
+		  $("#node-input-max").blur(function(){
+			$("#node-input-val").trigger("change");
+			if(this.value > minimum){
+			  if(this.value >= value){
+				maximum=parseInt(this.value);
+			  }
+			  else{
+				maximum=parseInt(this.value);
+				this.value=parseInt(maximum);
+				$("#slider").slider('value',parseInt(this.value));
+				$("#node-input-val").val(parseInt(this.value));
+			  }
+			  $("#slider").slider("option", "max", maximum);
+			}
+		  })
+		}
+		});
+</script>

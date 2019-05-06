@@ -35,8 +35,10 @@
     <h3>Turn On / Off (simple)</h3>
     <p>Changes the light on / off state based on the passed in <b>msg.payload</b> values of:</p>
     <dl class="message-properties">
-        <dt>msg.payload<span class="property-type">boolean</span></dt>
-        <dd>Will turn on or turn off the light with its previous configuration (color and brightness)</dd>
+        <dt>msg.intent</dt>
+        <dd>Will turn on or turn off the light with its previous configuration (color and brightness) when intent is 1/0. Intent is set automatically by sensor nodes.Learn more about intents <a href='http://thethingbox.io/docs/Intents.html'>here</a></dd>
+        <dt>msg.payload</dt>
+        <dd>Will turn on or turn off the light with its previous configuration (color and brightness) when payload is 1/0, "true"/"false" (strings) or true/false (boleans).</dd>
     </dl>
 
     <h3>Turn On / Off (extended)</h3>

@@ -37,13 +37,23 @@
     </dl>
 
     <h3>Motion Events</h3>
-    <p>The event message that the motion sensor sends contains the following data in the <b>msg.payload</b> object:</p>
-    <dl class="message-properties">
-        <dt>active<span class="property-type">boolean</span></dt>
-        <dd>Current sensor state</dd>
+	   <p>The event message that the motion sensor sends contains the following data in the <b>msg</b> object:</p>
+     <dl class="message-properties">
+        <dt>payload<span class="property-type">int</span></dt>
+        <dd>1 if motion is detected, 0 if not</dd>
 
-        <dt>motion<span class="property-type">boolean</span></dt>
-        <dd>Indicates if a motion is detected or not</dd>
+        <dt>intent<span class="property-type">int</span></dt>
+        <dd>same value as payload. Intents are automatically understood by activators as lights. 
+		Learn more about intents <a href='http://thethingbox.io/docs/Intents.html'>here</a></dd>
+
+        <dt>intensity<span class="property-type">int</span></dt>
+        <dd>100 if motion is detected, 0 if not</dd>
+
+        <dt>message<span class="property-type">string</span></dt>
+        <dd>"Sensor is On" or Off. This is a human destinated string.</dd>
+
+        <dt>battery<span class="property-type">int</span></dt>
+        <dd>Current battery level of the temperature sensor in percent</dd>
 
         <dt>updated<span class="property-type">string</span></dt>
         <dd>ISO 8601 date string of the last detected motion</dd>

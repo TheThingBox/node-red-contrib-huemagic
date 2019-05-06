@@ -31,10 +31,16 @@ module.exports = function(RED)
 			}
 			else if(sensor.config.on == true)
 			{
+				//!!! code aberrant mais on ne touche pas pour ne pas s'éloigner de l'original
 				if(sensor.state.presence)
 				{
-					var message = {};
-					message.payload = {active: true, motion: true, updated: moment.utc(sensor.state.lastUpdated).local().format()};
+					var message = {
+						intent: 1,
+						payload: 1,
+						message: "Sensor On",
+						battery: sensor.config.battery,
+						updated: moment.utc(sensor.state.lastUpdated).local().format()
+					};
 
 					message.info = {};
 					message.info.id = sensor.id;
@@ -55,8 +61,13 @@ module.exports = function(RED)
 				}
 				else
 				{
-					var message = {};
-					message.payload = {active: true, motion: false, updated: moment.utc(sensor.state.lastUpdated).local().format()};
+					var message = {
+						intent: 0,
+						payload: 0,
+						message: "Sensor Off",
+						battery: sensor.config.battery,
+						updated: moment.utc(sensor.state.lastUpdated).local().format()
+					};
 
 					message.info = {};
 					message.info.id = sensor.id;
@@ -95,8 +106,13 @@ module.exports = function(RED)
 					return bridge.client.sensors.save(sensor);
 				})
 				.then(sensor => {
-					var message = {};
-					message.payload = {active: msg.payload, motion: false, updated: moment.utc(sensor.state.lastUpdated).local().format()};
+					var message = {
+						intent: 0,
+						payload: 0,
+						message: "Sensor Off",
+						battery: sensor.config.battery,
+						updated: moment.utc(sensor.state.lastUpdated).local().format()
+					};
 					message.info = {};
 					message.info.id = sensor.id;
 					message.info.uniqueId = sensor.uniqueId;

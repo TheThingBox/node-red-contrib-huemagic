@@ -12,7 +12,7 @@ module.exports = function(RED)
 
 		//
 		// CHECK CONFIG
-		if(!config.sensorid || bridge == null)
+		if(!config.sensorid || bridge == null)
 		{
 			this.status({fill: "red", shape: "ring", text: "not configured"});
 			return false;
@@ -20,7 +20,7 @@ module.exports = function(RED)
 
 		//
 		// UPDATE STATE
-		this.status({fill: "grey", shape: "dot", text: "initializing…"});
+		this.status({fill: "grey", shape: "dot", text: "initializing..."});
 
 		//
 		// ON UPDATE
@@ -37,12 +37,15 @@ module.exports = function(RED)
 				realLUX = Math.round(Math.pow(10, realLUX));
 
 				var message = {};
-				message.payload = {};
-				message.payload.lux = realLUX;
-				message.payload.lightLevel = sensor.state.lightLevel;
-				message.payload.dark = sensor.state.dark;
-				message.payload.daylight = sensor.state.daylight;
-				message.payload.updated = moment.utc(sensor.state.lastUpdated).local().format();
+        
+				message.payload = sensor.state.lightLevel;
+				message.battery = sensor.config.battery;
+				message.updated = moment.utc(sensor.state.lastUpdated).local().format();
+
+				message.data = {};
+				message.data.lux = realLUX;
+				message.data.dark = sensor.state.dark;
+				message.data.daylight = sensor.state.daylight;
 
 				message.info = {};
 				message.info.id = sensor.id;
@@ -50,7 +53,6 @@ module.exports = function(RED)
 				message.info.name = sensor.name;
 				message.info.type = sensor.type;
 				message.info.softwareVersion = sensor.softwareVersion;
-				message.info.battery = sensor.config.battery;
 
 				message.info.model = {};
 				message.info.model.id = sensor.model.id;

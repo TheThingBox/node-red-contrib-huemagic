@@ -116,16 +116,17 @@ module.exports = function(RED)
 			}
 
 			// SIMPLE TURN ON / OFF LIGHT	
-		if(msg.intent !== undefined || msg.payload === true || msg.payload === false) {
-		  
-  			var state;
-  			if(msg.intent !== undefined) // intent is prioritary
-  				state = (msg.intent==1 ? true : false);
-  			else // take the payload
-  				state = msg.payload;
+		if(msg.intent !== undefined || typeof msg.payload !== 'object') {
+      
+    	var state;
+			if(msg.intent !== undefined) // intent is prioritary
+				state = (msg.intent==1 ? true : false);
+			else if(msg.payload === true || msg.payload === "true" || msg.payload === 1 || msg.payload === "1")
+				state = true;
+			else if(msg.payload === false || msg.payload === "false" || msg.payload === 0 || msg.payload === "0")
+				state = false;
 			
-
-				if(tempLightID != false)
+			if(state !== undefined && tempLightID !== false)
 				{
 					bridge.client.lights.getById(tempLightID)
 					.then(light => {
@@ -144,8 +145,11 @@ module.exports = function(RED)
 					});
 				}
 			}
-			// ALERT EFFECT
-			else if(typeof msg.payload.alert != 'undefined' && msg.payload.alert > 0)
+
+			//why else? these cases are not exclusiv
+				
+		// ALERT EFFECT			
+		if(typeof msg.payload.alert != 'undefined' && msg.payload.alert > 0)
 			{
 				bridge.client.lights.getById(tempLightID)
 				.then(light => {
@@ -222,8 +226,9 @@ module.exports = function(RED)
 					scope.status({fill: "red", shape: "ring", text: "input error"});
 				});
 			}
+			
+			//why else? these cases are not exclusiv
 			// EXTENDED TURN ON / OFF LIGHT
-			else
 			{
 				bridge.client.lights.getById(tempLightID)
 				.then(light => {
@@ -236,10 +241,12 @@ module.exports = function(RED)
 					// SET BRIGHTNESS
 					if(typeof msg.payload.brightness != 'undefined' || typeof msg.intensity !== 'undefined')
 					{
-						if(typeof msg.payload.brightness != 'undefined')
-							var brightness = parseInt(msg.payload.brightness);
+						
+						var brightness;
 						if(typeof msg.intensity !== 'undefined')
 							brightness = msg.intensity;
+						else 
+							brightness = parseInt(msg.payload.brightness);
 						
 						if(brightness < 0)
 							brightness = 0;
@@ -284,27 +291,28 @@ module.exports = function(RED)
 					// SET HEX COLOR
 					if(light.xy && (msg.payload.hex || msg.color))
 					{
-						var color = msg.payload.hex;
-						if (msg.color)
-							color = msg.color;
-						var rgbResult = hexRGB((color).toString());
-						light.xy = rgb.convertRGBtoXY([rgbResult.red, rgbResult.green, rgbResult.blue], light.model.id);
-						light.on = true;
+					let color;
+					if (typeof msg.color !== 'undefined')
+						color = msg.color;
+					else
+						color = msg.payload.hex;
+					var rgbResult = hexRGB((color).toString());
+					light.xy = rgb.convertRGBtoXY([rgbResult.red, rgbResult.green, rgbResult.blue], light.model.id);
+					light.on = true;
 					}
 
 					// SET COLOR TEMPERATURE
-					if(msg.payload.colorTemp && light.colorTemp)
+					if((msg.payload.colorTemp || typeof msg.whitecolor !== 'undefined') && light.colorTemp)
 					{
-						let colorTemp = parseInt(msg.payload.colorTemp);
-						if(colorTemp >= 153 && colorTemp <= 500)
-						{
-							light.colorTemp = parseInt(msg.payload.colorTemp);
-						}
+						let colorTemp;
+						if(typeof msg.whitecolor !== 'undefined')
+							colorTemp = msg.whitecolor;
 						else
-						{
-							scope.error("Invalid color temprature. Only 153 - 500 allowed");
-							return false;
-						}
+							colorTemp = parseInt(msg.payload.colorTemp);
+			  
+						if(colorTemp < 153) colorTemp = 153;
+						if(colorTemp > 500) colorTemp = 500;
+						light.colorTemp = parseInt(colorTemp);
 					}
 
 					// SET SATURATION
